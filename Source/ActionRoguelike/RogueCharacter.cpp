@@ -3,9 +3,12 @@
 
 #include "RogueCharacter.h"
 
+#include <ActorLockerEditorMode.h>
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Projectiles/RogueProjectileMagic.h"
 
 
 // Sets default values
@@ -23,6 +26,8 @@ ARogueCharacter::ARogueCharacter()
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	CameraComponent->SetupAttachment(SpringArmComponent);
 	
+	MuzzleSocketName = "Muzzle_01";
+	
 }
 
 // Called when the game starts or when spawned
@@ -30,6 +35,18 @@ void ARogueCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+// Called to bind functionality to input
+void ARogueCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	
+	UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+	
+	EnhancedInput->BindAction(Input_Move, ETriggerEvent::Triggered, this, &ARogueCharacter::Move);
+	EnhancedInput->BindAction(Input_Look, ETriggerEvent::Triggered, this, &ARogueCharacter::Look);
+	EnhancedInput->BindAction(Input_PrimaryAttack, ETriggerEvent::Triggered, this, &ARogueCharacter::PrimaryAttack);
 }
 
 void ARogueCharacter::Move(const FInputActionValue& InValue)
@@ -60,20 +77,28 @@ void ARogueCharacter::Look(const FInputActionInstance& InValue)
 	
 }
 
-// Called every frame
+void ARogueCharacter::PrimaryAttack()
+{
+	PlayAnimMontage(AttackMontage);
+	FTimerHandle AttackTimerHandle;
+	const float AttackDelayTime = 0.2f; // Delay time before the attack is executed
+	GetWorldTimerManager().SetTimer
+	(AttackTimerHandle, this, &ARogueCharacter::AttackTimerElapsed, AttackDelayTime);
+}
+
+void ARogueCharacter::AttackTimerElapsed()
+{
+	FVector SpawnLocation = GetMesh()->GetSocketLocation(MuzzleSocketName);
+	FRotator SpawnRotation = GetControlRotation();
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Instigator = this;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	
+	ARogueProjectileMagic* NewActor = GetWorld()->SpawnActor<ARogueProjectileMagic>
+	(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+}
+	// Called every frame
 void ARogueCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
-
-// Called to bind functionality to input
-void ARogueCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	
-	UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(PlayerInputComponent);
-	
-	EnhancedInput->BindAction(Input_Move, ETriggerEvent::Triggered, this, &ARogueCharacter::Move);
-	EnhancedInput->BindAction(Input_Look, ETriggerEvent::Triggered, this, &ARogueCharacter::Look);
-}
-
