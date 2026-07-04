@@ -1,0 +1,23 @@
+# Auto-normalize line endings for text files.
+* text=auto
+
+# ===== Unreal binary assets: treat as binary =====
+# Prevents line-ending conversion / bogus text diffs that can corrupt assets.
+*.uasset binary
+*.umap   binary
+*.upk    binary
+*.udk    binary
+
+# ===== Other common binary formats =====
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.tga binary
+*.bmp binary
+*.fbx binary
+*.wav binary
+*.mp3 binary
+*.ogg binary
+*.ttf binary
+*.otf binary

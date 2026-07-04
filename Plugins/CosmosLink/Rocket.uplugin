@@ -1,0 +1,42 @@
+{
+	"FileVersion": 3,
+	"Version": 5,
+	"VersionName": "1.1.0",
+	"FriendlyName": "Rocket",
+	"Description": "Rocket for Unreal Engine",
+	"Category": "Tool",
+	"CreatedBy": "Leartes Studios",
+	"CreatedByURL": "https://leartesstudios.com",
+	"DocsURL": "https://drive.google.com/file/d/190xUcWO45pf-LTXFGb5xxv1hOTDC_z_2/view",
+	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/dc179ca63d3a49af89be1172585e2f7b",
+	"SupportURL": "https://leartes.atlassian.net/servicedesk/customer/portal/1",
+	"EngineVersion": "5.8.0",
+	"CanContainContent": true,
+	"Installed": true,
+	"Modules": [
+		{
+			"Name": "Rocket",
+			"Type": "Editor",
+			"LoadingPhase": "PostDefault",
+			"PlatformAllowList": [
+				"Win64",
+				"Mac",
+				"Linux"
+			]
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "WebBrowserWidget",
+			"Enabled": true
+		},
+		{
+			"Name": "Niagara",
+			"Enabled": true
+		},
+		{
+			"Name": "PluginBrowser",
+			"Enabled": true
+		}
+	]
+}
