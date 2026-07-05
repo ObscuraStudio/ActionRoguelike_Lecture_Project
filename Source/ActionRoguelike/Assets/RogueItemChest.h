@@ -3,23 +3,41 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Core/RogueInteractionInterface.h"
 #include "GameFramework/Actor.h"
 #include "RogueItemChest.generated.h"
 
+class UStaticMeshComponent;
+
 UCLASS()
-class ACTIONROGUELIKE_API ARogueItemChest : public AActor
+class ACTIONROGUELIKE_API ARogueItemChest : public AActor, public IRogueInteractionInterface
 {
 	GENERATED_BODY()
 
-public:
-	// Sets default values for this actor's properties
-	ARogueItemChest();
-
+	
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Components")
+	TObjectPtr<UStaticMeshComponent> BaseMeshComponent;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Components")
+	TObjectPtr<UStaticMeshComponent> LidMeshComponent;
+
+	float CurrentAnimationPitch = 0.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	float AnimationSpeed = 60.f;	
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	float AnimationTargetPitch = 120.0f;
+	
+	void Tick(float DeltaTime);
 
 public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+
+	virtual void Interact() override;
+	
+	ARogueItemChest();
+	
 };
+

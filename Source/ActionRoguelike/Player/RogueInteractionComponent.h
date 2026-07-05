@@ -11,19 +11,21 @@ UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class ACTIONROGUELIKE_API URogueInteractionComponent : public UActorComponent
 {
 	GENERATED_BODY()
-
-public:
-	// Sets default values for this component's properties
-	URogueInteractionComponent();
-
+	
 protected:
 
 	UPROPERTY(EditDefaultsOnly, Category="Interaction")
 	float InteractionRadius;
 	
+	UPROPERTY()
+	TObjectPtr<AActor> SelectedActor;
 	
 public:
-	// Called every frame
+	
+	void Interact();
+	
+	URogueInteractionComponent();
+	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 };
