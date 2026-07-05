@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Core/RogueInteractionInterface.h"
+#include "ActionRoguelike/Core/RogueInteractionInterface.h"
 #include "GameFramework/Actor.h"
 #include "RogueItemChest.generated.h"
 
@@ -31,11 +31,16 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	float AnimationTargetPitch = 120.0f;
 	
-	void Tick(float DeltaTime);
+	UFUNCTION(BlueprintImplementableEvent, Category = "Animation")
+	void ChestAnimationComplete();
+	
+	
 
 public:
 
 	virtual void Interact() override;
+	
+	virtual void Tick(float DeltaTime) override;
 	
 	ARogueItemChest();
 	
