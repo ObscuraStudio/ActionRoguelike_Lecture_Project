@@ -13,6 +13,7 @@ class UInputAction;
 class UCameraComponent;
 class USpringArmComponent;
 class UAnimMontage;
+class UNiagaraSystem;
 
 UCLASS()
 class ACTIONROGUELIKE_API ARogueCharacter : public ACharacter
@@ -34,6 +35,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category= "PrimaryAttack")
 	TObjectPtr<UAnimMontage> AttackMontage;
 	
+	UPROPERTY(EditDefaultsOnly, Category= "PrimaryAttack")
+	TObjectPtr<UNiagaraSystem> CastingEffect;
+	
+	UPROPERTY(EditDefaultsOnly, Category= "PrimaryAttack")
+	TObjectPtr<USoundBase> CastingSound;
+	
 	UPROPERTY(VisibleAnywhere, Category = Components)
 	TObjectPtr<UCameraComponent> CameraComponent;
 	
@@ -49,12 +56,16 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	TObjectPtr<UInputAction> Input_PrimaryAttack;
 	
+	UPROPERTY(EditDefaultsOnly, Category = Input)
+	TObjectPtr<UInputAction> Input_Jump;
+	
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	void Move(const FInputActionValue& InValue);
 	void Look(const FInputActionInstance& InValue);
+	void Jump();
 	void PrimaryAttack();
 	void AttackTimerElapsed();
 

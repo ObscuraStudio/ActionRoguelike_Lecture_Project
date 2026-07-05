@@ -5,9 +5,11 @@
 
 #include <ActorLockerEditorMode.h>
 #include "EnhancedInputComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Projectiles/RogueProjectileMagic.h"
 
 
@@ -46,6 +48,7 @@ void ARogueCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	
 	EnhancedInput->BindAction(Input_Move, ETriggerEvent::Triggered, this, &ARogueCharacter::Move);
 	EnhancedInput->BindAction(Input_Look, ETriggerEvent::Triggered, this, &ARogueCharacter::Look);
+	EnhancedInput->BindAction(Input_Jump, ETriggerEvent::Triggered, this, &ARogueCharacter::Jump);
 	EnhancedInput->BindAction(Input_PrimaryAttack, ETriggerEvent::Triggered, this, &ARogueCharacter::PrimaryAttack);
 }
 
@@ -77,11 +80,24 @@ void ARogueCharacter::Look(const FInputActionInstance& InValue)
 	
 }
 
+void ARogueCharacter::Jump()
+{
+	Super::Jump();
+}
+
 void ARogueCharacter::PrimaryAttack()
 {
 	PlayAnimMontage(AttackMontage);
+	
 	FTimerHandle AttackTimerHandle;
 	const float AttackDelayTime = 0.2f; // Delay time before the attack is executed
+	
+	UNiagaraFunctionLibrary::SpawnSystemAttached
+	(CastingEffect, GetMesh(), MuzzleSocketName,
+	FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
+	
+	UGameplayStatics::PlaySound2D(this, CastingSound);
+	
 	GetWorldTimerManager().SetTimer
 	(AttackTimerHandle, this, &ARogueCharacter::AttackTimerElapsed, AttackDelayTime);
 }
@@ -96,6 +112,8 @@ void ARogueCharacter::AttackTimerElapsed()
 	
 	ARogueProjectileMagic* NewActor = GetWorld()->SpawnActor<ARogueProjectileMagic>
 	(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+	
+	MoveIgnoreActorAdd(NewActor);
 }
 	// Called every frame
 void ARogueCharacter::Tick(float DeltaTime)

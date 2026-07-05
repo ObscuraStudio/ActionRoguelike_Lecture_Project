@@ -5,6 +5,7 @@
 
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/DamageType.h"
 #include "GameFramework/Pawn.h"
@@ -21,6 +22,9 @@ ARogueProjectileMagic::ARogueProjectileMagic()
 	
 	LoopedNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("LoopedNiagaraComp"));
 	LoopedNiagaraComponent->SetupAttachment(SphereComponent);
+	LoopedAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("LoopedAudioComponent"));
+	LoopedAudioComponent->SetupAttachment(SphereComponent);
+		
 	
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMoveComp"));
 	ProjectileMovementComponent->InitialSpeed = 500.0f;
@@ -40,13 +44,15 @@ void ARogueProjectileMagic::PostInitializeComponents()
 void ARogueProjectileMagic::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit )
 {
-	// @todo: create our own damage type
+	FVector HitFromDirection = GetActorRotation().Vector(); 
 	
-	TSubclassOf<UDamageType> DmgTypeClass = UDamageType::StaticClass();
-	
-	UGameplayStatics::ApplyDamage(OtherActor, 10.f, GetInstigatorController(), this, DmgTypeClass);
+	UGameplayStatics::ApplyPointDamage
+	(OtherActor, 10.f, HitFromDirection, Hit, GetInstigatorController(), this, DmgTypeClass);
 	
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ExplosionEffect, GetActorLocation());
+	
+	UGameplayStatics::PlaySoundAtLocation
+	(this, ExplosionSound, GetActorLocation(), FRotator::ZeroRotator);
 	
 	Destroy();
 }
