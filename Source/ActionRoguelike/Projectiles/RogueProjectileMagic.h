@@ -19,27 +19,12 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	TSubclassOf<UDamageType> DmgTypeClass;
-	
-	UPROPERTY(EditDefaultsOnly, Category="Effects")
-	TObjectPtr<UNiagaraSystem> ExplosionEffect;
-	
-	UPROPERTY(EditDefaultsOnly, Category="Sound")
-	TObjectPtr<USoundBase> ExplosionSound;
-	
-	UPROPERTY(EditDefaultsOnly, Category="Components")
-	TObjectPtr<UNiagaraComponent> LoopedNiagaraComponent;
-	
-	UPROPERTY(EditDefaultsOnly, Category="Components")
-	TObjectPtr<UAudioComponent> LoopedAudioComponent;
-	
-	UFUNCTION()
-	void OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-		FVector NormalImpulse, const FHitResult& Hit );
+
+	virtual void OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+		FVector NormalImpulse, const FHitResult& Hit) override;
 	
 public:
 	
-	virtual void PostInitializeComponents() override;
-
 	ARogueProjectileMagic();
 };
 	

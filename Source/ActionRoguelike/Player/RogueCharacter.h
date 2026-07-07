@@ -4,17 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Projectiles/RogueProjectile.h"
 #include "RogueCharacter.generated.h"
 
-class ARogueProjectileMagic;
-class ARogueProjectileTeleport;
 struct FInputActionInstance;
 struct FInputActionValue;
+
 class UInputAction;
 class UCameraComponent;
 class USpringArmComponent;
 class UAnimMontage;
 class UNiagaraSystem;
+class ARogueProjectile;
 
 UCLASS()
 class ACTIONROGUELIKE_API ARogueCharacter : public ACharacter
@@ -22,16 +23,19 @@ class ACTIONROGUELIKE_API ARogueCharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
+
 	ARogueCharacter();
 
 protected:
 	
-	UPROPERTY(EditDefaultsOnly, Category = "PrimaryAttack")
-	TSubclassOf<ARogueProjectileMagic> ProjectileClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
+	TSubclassOf<ARogueProjectile> PrimaryAttackProjectileClass;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Teleport")
-	TSubclassOf<ARogueProjectileTeleport> TeleportProjectileClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
+	TSubclassOf<ARogueProjectile> TeleportProjectileClass;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
+	TSubclassOf<ARogueProjectile> BlackholeProjectileClass;
 	
 	UPROPERTY(VisibleAnywhere, Category= "PrimaryAttack")
 	FName MuzzleSocketName;
@@ -45,43 +49,36 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category= "PrimaryAttack")
 	TObjectPtr<USoundBase> CastingSound;
 	
-	UPROPERTY(VisibleAnywhere, Category = Components)
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<UCameraComponent> CameraComponent;
 	
-	UPROPERTY(VisibleAnywhere, Category = Components)
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<USpringArmComponent> SpringArmComponent;
 	
-	UPROPERTY(EditDefaultsOnly, Category = Input)
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> Input_Move;
 	
-	UPROPERTY(EditDefaultsOnly, Category = Input)
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> Input_Look;
 	
-	UPROPERTY(EditDefaultsOnly, Category = Input)
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> Input_PrimaryAttack;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> Input_Blackhole;
 	
-	UPROPERTY(EditDefaultsOnly, Category = Input)
-	TObjectPtr<UInputAction> Input_SecondaryAttack;
-	
-	UPROPERTY(EditDefaultsOnly, Category = Input)
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> Input_Teleport;
 	
-	UPROPERTY(EditDefaultsOnly, Category = Input)
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> Input_Jump;
 	
-	
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
 	void Move(const FInputActionValue& InValue);
 	void Look(const FInputActionInstance& InValue);
 	void Jump();
-	void PrimaryAttack();
-	void SecondaryAttack();
-	void Teleport();
-	void AttackTimerElapsed();
-	void TeleportTimerElapsed();
+	void StartProjectileAttack(TSubclassOf<ARogueProjectile> ProjectileClass);
+	void AttackTimerElapsed(TSubclassOf<ARogueProjectile> ProjectileClass);
 
 public:
 	// Called every frame
@@ -89,4 +86,6 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
+	virtual void BeginPlay() override;
 };

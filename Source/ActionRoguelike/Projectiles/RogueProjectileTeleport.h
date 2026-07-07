@@ -12,46 +12,32 @@ class UNiagaraComponent;
 class UAudioComponent;
 
 UCLASS(Abstract)
+
 class ACTIONROGUELIKE_API ARogueProjectileTeleport : public ARogueProjectile
 {
 	GENERATED_BODY()
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, Category="Effects")
-	TObjectPtr<UNiagaraSystem> PortalEffect;
-
-	UPROPERTY(EditDefaultsOnly, Category="Sound")
-	TObjectPtr<USoundBase> PortalSound;
+	UPROPERTY(EditDefaultsOnly, Category="Explosion")
+	float DetonateDelay = 0.5f;
 	
-	UPROPERTY(EditDefaultsOnly, Category="Components")
-	TObjectPtr<UAudioComponent> LoopedAudioComponent;
+	UPROPERTY(EditDefaultsOnly, Category="Explosion")
+	float TeleportDelay = 0.5f;
 	
-	UPROPERTY(EditDefaultsOnly, Category="Components")
-	TObjectPtr<UNiagaraComponent> LoopedNiagaraComponent;
-
-	UFUNCTION()
-	void OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-		FVector NormalImpulse, const FHitResult& Hit);
-
-	// Detonates: stops movement, plays the portal effect, then schedules the teleport.
-	void Explode();
-
-	// Teleports the instigator (the player that fired us) to the detonation point.
-	void TeleportInstigator();
+	FTimerHandle TeleportHandle;
 	
-	void MethodWithDelay();
-
-	FTimerHandle DetonationTimerHandle;
-	FTimerHandle TeleportTimerHandle;
-
-	// Ensures we only detonate once (a world hit and the timer could both fire).
-	bool bExploded = false;
-
+	void StartDelayedTeleport();
+    	
+	void HandleTeleport();
+	
+	virtual void BeginPlay() override;
+	
+	virtual void OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+    		FVector NormalImpulse, const FHitResult& Hit) override;
+	
 public:
-
-	virtual void PostInitializeComponents() override;
-
-ARogueProjectileTeleport();
+	
+	ARogueProjectileTeleport();
 
 };
