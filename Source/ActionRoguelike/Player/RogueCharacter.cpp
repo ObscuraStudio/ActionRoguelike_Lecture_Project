@@ -11,6 +11,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Projectiles/RogueProjectileMagic.h"
+#include "Projectiles/RogueProjectileTeleport.h"
 
 
 // Sets default values
@@ -50,6 +51,8 @@ void ARogueCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	EnhancedInput->BindAction(Input_Look, ETriggerEvent::Triggered, this, &ARogueCharacter::Look);
 	EnhancedInput->BindAction(Input_Jump, ETriggerEvent::Triggered, this, &ARogueCharacter::Jump);
 	EnhancedInput->BindAction(Input_PrimaryAttack, ETriggerEvent::Triggered, this, &ARogueCharacter::PrimaryAttack);
+	EnhancedInput->BindAction(Input_SecondaryAttack, ETriggerEvent::Triggered, this, &ARogueCharacter::SecondaryAttack);
+	EnhancedInput->BindAction(Input_Teleport, ETriggerEvent::Started, this, &ARogueCharacter::Teleport);
 }
 
 void ARogueCharacter::Move(const FInputActionValue& InValue)
@@ -102,6 +105,29 @@ void ARogueCharacter::PrimaryAttack()
 	(AttackTimerHandle, this, &ARogueCharacter::AttackTimerElapsed, AttackDelayTime);
 }
 
+void ARogueCharacter::SecondaryAttack()
+{
+	
+}
+
+void ARogueCharacter::Teleport()
+{
+	PlayAnimMontage(AttackMontage);
+
+	UNiagaraFunctionLibrary::SpawnSystemAttached
+	(CastingEffect, GetMesh(), MuzzleSocketName,
+	FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
+
+	UGameplayStatics::PlaySound2D(this, CastingSound);
+
+	// Let the cast animation play briefly, then spawn the teleport projectile.
+	FTimerHandle TeleportTimerHandle;
+	const float CastDelayTime = 0.2f;
+
+	GetWorldTimerManager().SetTimer
+	(TeleportTimerHandle, this, &ARogueCharacter::TeleportTimerElapsed, CastDelayTime);
+}
+
 void ARogueCharacter::AttackTimerElapsed()
 {
 	FVector SpawnLocation = GetMesh()->GetSocketLocation(MuzzleSocketName);
@@ -114,6 +140,19 @@ void ARogueCharacter::AttackTimerElapsed()
 	(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
 	
 	MoveIgnoreActorAdd(NewActor);
+}
+
+void ARogueCharacter::TeleportTimerElapsed()
+{
+	FVector SpawnLocation = GetMesh()->GetSocketLocation(MuzzleSocketName);
+	FRotator SpawnRotation = GetControlRotation();
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Instigator = this; // Lets the projectile teleport us later via GetInstigator()
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	GetWorld()->SpawnActor<ARogueProjectileTeleport>
+	(TeleportProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
 }
 	// Called every frame
 void ARogueCharacter::Tick(float DeltaTime)

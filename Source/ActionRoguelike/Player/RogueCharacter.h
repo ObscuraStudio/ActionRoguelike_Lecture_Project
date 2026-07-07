@@ -7,6 +7,7 @@
 #include "RogueCharacter.generated.h"
 
 class ARogueProjectileMagic;
+class ARogueProjectileTeleport;
 struct FInputActionInstance;
 struct FInputActionValue;
 class UInputAction;
@@ -28,6 +29,9 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "PrimaryAttack")
 	TSubclassOf<ARogueProjectileMagic> ProjectileClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Teleport")
+	TSubclassOf<ARogueProjectileTeleport> TeleportProjectileClass;
 	
 	UPROPERTY(VisibleAnywhere, Category= "PrimaryAttack")
 	FName MuzzleSocketName;
@@ -56,6 +60,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	TObjectPtr<UInputAction> Input_PrimaryAttack;
 	
+	
+	UPROPERTY(EditDefaultsOnly, Category = Input)
+	TObjectPtr<UInputAction> Input_SecondaryAttack;
+	
+	UPROPERTY(EditDefaultsOnly, Category = Input)
+	TObjectPtr<UInputAction> Input_Teleport;
+	
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	TObjectPtr<UInputAction> Input_Jump;
 	
@@ -67,7 +78,10 @@ protected:
 	void Look(const FInputActionInstance& InValue);
 	void Jump();
 	void PrimaryAttack();
+	void SecondaryAttack();
+	void Teleport();
 	void AttackTimerElapsed();
+	void TeleportTimerElapsed();
 
 public:
 	// Called every frame
