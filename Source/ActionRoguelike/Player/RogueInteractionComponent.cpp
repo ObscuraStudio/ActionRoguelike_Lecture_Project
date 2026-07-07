@@ -14,11 +14,12 @@
 
 void URogueInteractionComponent::Interact()
 {
-	IRogueInteractionInterface* InteractInterface = Cast<IRogueInteractionInterface>(SelectedActor);
-	if (InteractInterface != nullptr)
+	if (SelectedActor && SelectedActor->Implements<URogueInteractionInterface>())
 	{
-		InteractInterface->Interact();
+		IRogueInteractionInterface::Execute_Interact(SelectedActor);
 	}
+	
+	
 }
 
 // Sets default values for this component's properties

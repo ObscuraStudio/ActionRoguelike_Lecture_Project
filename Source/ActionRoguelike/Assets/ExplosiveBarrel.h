@@ -52,7 +52,8 @@ protected:
 	void OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		FVector NormalImpulse, const FHitResult& Hit );
 	
-	void ExplosionTimerElapsed();
+	UFUNCTION(BlueprintCallable, Category = "Explosion")
+	void Explode();
 
 	// Handle for the single explosion timer started on ignition.
 	FTimerHandle ExplosionTimerHandle;

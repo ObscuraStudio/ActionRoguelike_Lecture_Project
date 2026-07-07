@@ -63,7 +63,7 @@ void AExplosiveBarrel::OnActorHit(UPrimitiveComponent* HitComponent, AActor* Oth
 	// Schedule the single explosion; ExplosionTimerElapsed will fire once after this delay.
 	
 	GetWorldTimerManager().SetTimer
-	(ExplosionTimerHandle, this, &AExplosiveBarrel::ExplosionTimerElapsed, ExplosionDelayTime);
+	(ExplosionTimerHandle, this, &AExplosiveBarrel::Explode, ExplosionDelayTime);
 }
 
 void AExplosiveBarrel::PostInitializeComponents()
@@ -73,7 +73,7 @@ void AExplosiveBarrel::PostInitializeComponents()
 	StaticMeshComponent->OnComponentHit.AddDynamic(this, &AExplosiveBarrel::OnActorHit);
 }
 
-void AExplosiveBarrel::ExplosionTimerElapsed()
+void AExplosiveBarrel::Explode()
 {
 	// Stop the looped ignition effects that were started in OnActorHit.
 	if (LoopedNiagaraComponent)
@@ -90,9 +90,12 @@ void AExplosiveBarrel::ExplosionTimerElapsed()
 	(ExplosionEffect, StaticMeshComponent, NAME_None,
 	FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
 
+	StaticMeshComponent->AddImpulse(FVector::UpVector * 1000, NAME_None, true);
+	StaticMeshComponent->AddAngularImpulseInDegrees(FVector::RightVector * 1000, NAME_None, true);
 	UGameplayStatics::PlaySound2D(this, ExplosionSound);
 
 	// Shove nearby physics-simulating objects away from the blast.
 	RadialForceComponent->FireImpulse();
 
 }
+	
