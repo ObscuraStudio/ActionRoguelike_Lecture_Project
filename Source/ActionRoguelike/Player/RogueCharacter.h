@@ -7,6 +7,7 @@
 #include "Projectiles/RogueProjectile.h"
 #include "RogueCharacter.generated.h"
 
+class URogueActionSystemComponent;
 struct FInputActionInstance;
 struct FInputActionValue;
 
@@ -55,6 +56,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<USpringArmComponent> SpringArmComponent;
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<URogueActionSystemComponent> ActionSystemComponent;
+	
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> Input_Move;
@@ -88,4 +92,6 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 	virtual void BeginPlay() override;
+	
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 };
